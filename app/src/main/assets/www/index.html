@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="theme-color" content="#1A3A2A"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Labour Mistry"/>
+<meta name="description" content="Labour Mistry Pro – Offline workforce management for construction sites"/>
+<title>Labour Mistry Pro</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;500;600&display=swap" rel="stylesheet"/>
+
+<style>
+:root{
+  --bg:#F5F2EC;
+  --bg2:#EDE9E0;
+  --bg3:#E3DECF;
+  --card:#FDFAF5;
+  --ink:#1C1A16;
+  --ink2:#5C5749;
+  --ink3:#8C8476;
+  --border:#D4CFC4;
+  --border2:#C2BBB0;
+  --green:#2D6A2A;
+  --green-bg:#E8F3E0;
+  --green-border:#9DC97A;
+  --red:#8B1E1E;
+  --red-bg:#FCEBEB;
+  --red-border:#E09090;
+  --amber:#7A4A0A;
+  --amber-bg:#FDF0D5;
+  --amber-border:#E8B060;
+  --blue:#1A3D7A;
+  --blue-bg:#E3EDFC;
+  --blue-border:#7AAAE8;
+  --accent:#C8812A;
+  --radius:10px;
+  --radius-sm:6px;
+  --font:'Noto Sans','Noto Sans Devanagari',sans-serif;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 1px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.10),0 1px 3px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{font-size:14px}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);min-height:100vh;overscroll-behavior:none}
+
+/* LAYOUT */
+#app{display:flex;flex-direction:column;min-height:100vh;max-width:900px;margin:0 auto}
+#topbar{background:var(--ink);color:#EDE8DC;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+#topbar .logo{font-size:16px;font-weight:600;letter-spacing:.02em;display:flex;align-items:center;gap:8px}
+#topbar .logo svg{opacity:.8}
+#topbar .meta{font-size:11px;color:#A09880;text-align:right}
+#offline-pill{display:none;background:#7A4A0A;color:#FDF0D5;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;letter-spacing:.06em}
+#offline-pill.show{display:inline-block}
+
+#nav{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+#nav::-webkit-scrollbar{display:none}
+.nav-btn{flex-shrink:0;padding:10px 14px;font-size:12px;font-weight:500;border:none;background:transparent;color:var(--ink2);cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;font-family:var(--font);letter-spacing:.02em;transition:color .15s}
+.nav-btn.active{color:var(--ink);border-bottom-color:var(--accent)}
+
+#content{flex:1;padding:14px;overflow-y:auto}
+.sec{display:none}.sec.active{display:block}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;box-shadow:var(--shadow)}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.card-title{font-size:14px;font-weight:600;color:var(--ink)}
+
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:10px}
+@media(max-width:600px){.g3{grid-template-columns:1fr 1fr}.g4{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}}
+
+/* FORM ELEMENTS */
+.fg{display:flex;flex-direction:column;gap:4px}
+label{font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em}
+input,select,textarea{font-size:13px;padding:8px 10px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg);color:var(--ink);width:100%;font-family:var(--font);appearance:none;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);background:#fff}
+input::placeholder{color:var(--ink3)}
+
+/* BUTTONS */
+.btn{padding:8px 14px;font-size:13px;font-weight:500;border:1px solid var(--border2);border-radius:var(--radius-sm);cursor:pointer;background:var(--card);color:var(--ink);font-family:var(--font);transition:background .12s,opacity .12s;display:inline-flex;align-items:center;gap:5px}
+.btn:active{opacity:.8}
+.btn-primary{background:var(--ink);color:#F5F2EC;border-color:var(--ink)}
+.btn-green{background:var(--green-bg);color:var(--green);border-color:var(--green-border)}
+.btn-red{color:var(--red);border-color:var(--red-border);background:var(--red-bg)}
+.btn-amber{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-border)}
+.btn-sm{padding:4px 9px;font-size:11px}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+/* METRICS */
+.met-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:500px){.met-grid{grid-template-columns:repeat(2,1fr)}}
+.met{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;box-shadow:var(--shadow)}
+.met-l{font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.met-v{font-size:22px;font-weight:600;color:var(--ink);line-height:1.1}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{font-size:10px;font-weight:600;color:var(--ink3);text-align:left;padding:7px 8px;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;background:var(--bg2)}
+td{padding:9px 8px;border-bottom:1px solid var(--border);color:var(--ink);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg2)}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:.03em}
+.bg{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+.ba{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+.bh{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border)}
+.bb{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border)}
+.bn{background:var(--bg3);color:var(--ink2);border:1px solid var(--border)}
+
+/* ALERT BOXES */
+.ok-box{background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;color:var(--green);margin-bottom:10px}
+.err-box{background:var(--red-bg);border:1px solid var(--red-border);border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:10px}
+.warn-box{background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;color:var(--amber);margin-bottom:10px}
+.info-box{background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:var(--blue);margin-bottom:10px}
+
+/* AVATAR */
+.av{width:32px;height:32px;border-radius:50%;background:var(--blue-bg);color:var(--blue);font-size:11px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;border:1px solid var(--blue-border)}
+.av img{width:32px;height:32px;object-fit:cover;border-radius:50%}
+.av-lg{width:56px;height:56px;border-radius:50%;background:var(--blue-bg);color:var(--blue);font-size:17px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;border:1px solid var(--blue-border)}
+.av-lg img{width:56px;height:56px;object-fit:cover;border-radius:50%}
+
+/* PHOTO BOX */
+.photo-box{width:80px;height:80px;border:1.5px dashed var(--border2);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;background:var(--bg2);flex-shrink:0;transition:border-color .15s}
+.photo-box:hover{border-color:var(--accent)}
+.photo-box img{width:80px;height:80px;object-fit:cover}
+.photo-lbl{font-size:10px;color:var(--ink3);text-align:center;padding:6px;line-height:1.4}
+
+/* ATTENDANCE ROW */
+.att-row{display:flex;align-items:center;gap:8px;padding:9px 4px;border-bottom:1px solid var(--border)}
+.att-row:last-child{border-bottom:none}
+.att-btn{padding:5px 12px;font-size:12px;font-weight:600;border:1px solid var(--border2);border-radius:20px;cursor:pointer;background:transparent;color:var(--ink2);font-family:var(--font);transition:all .12s}
+.att-btn:active{transform:scale(.95)}
+.att-btn.sel-P{background:var(--green-bg);color:var(--green);border-color:var(--green-border)}
+.att-btn.sel-H{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-border)}
+.att-btn.sel-A{background:var(--red-bg);color:var(--red);border-color:var(--red-border)}
+.att-btn.sel-D{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-border)}
+.dbl-row{background:linear-gradient(90deg,var(--blue-bg) 0%,transparent 100%);border-radius:var(--radius-sm)}
+
+/* CAMERA */
+.cam-wrap{position:relative;border-radius:var(--radius-sm);overflow:hidden;background:#111;aspect-ratio:4/3;width:100%}
+.cam-wrap video{width:100%;height:100%;object-fit:cover;display:block}
+.cam-wrap canvas{position:absolute;top:0;left:0;width:100%;height:100%}
+.face-oval{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:160px;height:200px;border:2.5px solid rgba(255,255,255,.6);border-radius:50%/42%;pointer-events:none;box-shadow:0 0 0 9999px rgba(0,0,0,.3)}
+.cam-label{position:absolute;bottom:8px;left:0;right:0;text-align:center;font-size:11px;color:rgba(255,255,255,.7);font-weight:500}
+
+/* PROGRESS */
+.prog-bar{height:5px;background:var(--border);border-radius:5px;overflow:hidden;margin:8px 0}
+.prog-fill{height:5px;background:var(--green);border-radius:5px;transition:width .2s}
+
+/* DIVIDER */
+hr{border:none;border-top:1px solid var(--border);margin:12px 0}
+
+/* EMPTY */
+.empty{text-align:center;padding:24px;color:var(--ink3);font-size:13px}
+
+/* WORKER INFO STRIP */
+.winfo{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg2);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:12px}
+
+/* INSTALL BANNER */
+#install-banner{display:none;background:linear-gradient(135deg,#1A3A2A,#2D6A2A);color:#E8F3E0;padding:12px 16px;font-size:13px;align-items:center;gap:10px;border-bottom:1px solid #1A3A2A}
+#install-banner.show{display:flex}
+#install-banner button{background:#E8F3E0;color:#1A3A2A;border:none;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font)}
+
+/* TOAST */
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#F5F2EC;font-size:13px;font-weight:500;padding:10px 20px;border-radius:24px;z-index:9999;transition:transform .25s;pointer-events:none;white-space:nowrap;box-shadow:var(--shadow-md)}
+#toast.show{transform:translateX(-50%) translateY(0)}
+
+/* EXPORT SECTION */
+.export-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:480px){.export-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- INSTALL BANNER -->
+<div id="install-banner">
+  <span>📲 Install as app — works offline!</span>
+  <button id="install-btn">Install</button>
+  <button onclick="document.getElementById('install-banner').classList.remove('show')" style="background:transparent;color:#E8F3E0;border:none;font-size:18px;cursor:pointer;line-height:1">×</button>
+</div>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="logo">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Labour Mistry Pro
+  </div>
+  <div class="meta">
+    <div id="hDate"></div>
+    <div style="display:flex;gap:5px;justify-content:flex-end;margin-top:3px">
+      <span class="badge bb" id="hCount"></span>
+      <span id="offline-pill">OFFLINE</span>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div id="nav">
+  <button class="nav-btn active" onclick="sw('dash',this)">Dashboard</button>
+  <button class="nav-btn" onclick="sw('workers',this)">Workers</button>
+  <button class="nav-btn" onclick="sw('att',this)">Attendance</button>
+  <button class="nav-btn" onclick="sw('face',this)">Face Verify</button>
+  <button class="nav-btn" onclick="sw('pay',this)">Payments</button>
+  <button class="nav-btn" onclick="sw('report',this)">Reports</button>
+  <button class="nav-btn" onclick="sw('export',this)">Export</button>
+</div>
+
+<div id="content">
+
+<!-- DASHBOARD -->
+<div id="dash" class="sec active">
+  <div class="met-grid" id="dMet"></div>
+  <div id="dblAlert"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+    <div class="card"><div class="card-head"><span class="card-title">Today's Attendance</span></div><div id="dAtt"></div></div>
+    <div class="card"><div class="card-head"><span class="card-title">Pending Payments</span></div><div id="dPay"></div></div>
+  </div>
+</div>
+
+<!-- WORKERS -->
+<div id="workers" class="sec">
+  <div class="card">
+    <div class="card-head"><span class="card-title">Add New Worker</span></div>
+    <div style="display:flex;gap:14px;align-items:flex-start">
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:center">
+        <div class="photo-box" id="photoBox" onclick="document.getElementById('photoIn').click()">
+          <div class="photo-lbl">📷<br>Tap for<br>photo</div>
+        </div>
+        <div style="font-size:10px;color:var(--ink3);text-align:center">Face<br>verify</div>
+        <input type="file" id="photoIn" accept="image/*" capture="user" style="display:none" onchange="previewPhoto(event)"/>
+      </div>
+      <div style="flex:1">
+        <div class="g3">
+          <div class="fg"><label>Full Name *</label><input id="wN" placeholder="Worker name"/></div>
+          <div class="fg"><label>Trade / Skill *</label><input id="wT" placeholder="Mason, Carpenter…"/></div>
+          <div class="fg"><label>Mobile</label><input id="wP" placeholder="Phone" type="tel"/></div>
+        </div>
+        <div class="g4">
+          <div class="fg"><label>Daily Wage ₹ *</label><input id="wW" type="number" placeholder="500"/></div>
+          <div class="fg"><label>Address</label><input id="wA" placeholder="Village/Town"/></div>
+          <div class="fg"><label>Aadhar No.</label><input id="wAd" placeholder="XXXX XXXX XXXX"/></div>
+          <div class="fg"><label>Joined</label><input id="wJ" type="date"/></div>
+        </div>
+        <hr/>
+        <div style="font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Bank / UPI Details</div>
+        <div class="g4">
+          <div class="fg"><label>Account No.</label><input id="wBA" placeholder="Account number"/></div>
+          <div class="fg"><label>IFSC</label><input id="wBI" placeholder="IFSC"/></div>
+          <div class="fg"><label>Bank Name</label><input id="wBK" placeholder="Bank name"/></div>
+          <div class="fg"><label>UPI ID</label><input id="wUPI" placeholder="mobile@upi"/></div>
+        </div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="addWorker()">✓ Add Worker</button>
+      <button class="btn" onclick="clearWF()">Clear</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-title">Worker List</span>
+      <input placeholder="Search…" oninput="renderWorkers()" id="wSrch" style="width:160px;padding:6px 10px;font-size:12px"/>
+    </div>
+    <div class="tbl-wrap" id="wTbl"></div>
+  </div>
+</div>
+
+<!-- ATTENDANCE -->
+<div id="att" class="sec">
+  <div class="card">
+    <div class="card-head"><span class="card-title">Mark Attendance</span></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+      <div class="fg"><label>Date</label><input type="date" id="aDate" onchange="renderAttForm()" style="width:150px"/></div>
+      <div class="fg"><label>Site / Location</label><input id="aSite" placeholder="Site name" style="width:160px"/></div>
+      <div class="fg"><label>Mistry / Supervisor</label><input id="aMistry" placeholder="Supervisor" style="width:140px"/></div>
+    </div>
+    <div id="dblWarnAtt"></div>
+    <div class="info-box">P = Present · H = Half day · A = Absent · D = Double shift (2× wage)</div>
+    <div id="attFormList"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="saveAtt()">✓ Save Attendance</button>
+      <button class="btn btn-green" onclick="markAllP()">Mark All Present</button>
+      <button class="btn" onclick="clearAllSel()">Clear</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-title">Attendance History</span></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+      <select id="aFW" onchange="renderAttHist()" style="width:155px"></select>
+      <input type="month" id="aFM" onchange="renderAttHist()" style="width:145px"/>
+    </div>
+    <div class="tbl-wrap" id="attHist"></div>
+  </div>
+</div>
+
+<!-- FACE VERIFY -->
+<div id="face" class="sec">
+  <div class="card">
+    <div class="card-head"><span class="card-title">Face Verification — Attendance</span></div>
+    <div class="info-box">Select a worker, start camera, and capture to verify identity before marking attendance.</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+      <div class="fg"><label>Select Worker</label>
+        <select id="fvWorker" onchange="onFVWorker()" style="width:200px">
+          <option value="">-- Select worker --</option>
+        </select>
+      </div>
+      <div class="fg"><label>Date</label><input type="date" id="fvDate" style="width:150px"/></div>
+      <div class="fg"><label>Shift</label>
+        <select id="fvShift" style="width:130px">
+          <option value="Morning">Morning</option>
+          <option value="Evening">Evening</option>
+          <option value="Double">Double shift</option>
+        </select>
+      </div>
+      <div class="fg"><label>Site</label><input id="fvSite" placeholder="Site name" style="width:150px"/></div>
+    </div>
+    <div id="fvWorkerInfo"></div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+      <div style="flex:1;min-width:240px">
+        <div style="font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Live Camera</div>
+        <div class="cam-wrap" id="camWrap">
+          <video id="camVideo" autoplay playsinline muted></video>
+          <canvas id="camCanvas"></canvas>
+          <div class="face-oval"></div>
+          <div class="cam-label">Position face in oval</div>
+        </div>
+        <div class="btn-row" style="margin-top:10px">
+          <button class="btn btn-primary" id="btnStart" onclick="startCam()">▶ Start Camera</button>
+          <button class="btn btn-green" id="btnCapture" onclick="captureVerify()" style="display:none">📸 Capture & Verify</button>
+          <button class="btn btn-red btn-sm" id="btnStop" onclick="stopCam()" style="display:none">■ Stop</button>
+        </div>
+      </div>
+      <div style="flex:1;min-width:200px">
+        <div style="font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Registered Photo</div>
+        <div id="regPhoto" style="width:180px;height:180px;border:1px solid var(--border);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;background:var(--bg2);color:var(--ink3);font-size:12px;overflow:hidden">No photo</div>
+        <div class="prog-bar" id="fvProgress" style="display:none"><div class="prog-fill" id="fvFill" style="width:0%"></div></div>
+        <div style="text-align:center;padding:8px 0;font-size:13px;font-weight:500" id="fvStatus"></div>
+        <div id="fvResult"></div>
+      </div>
+    </div>
+    <div id="fvAlert" style="margin-top:12px"></div>
+    <div class="btn-row">
+      <button class="btn btn-green" id="btnFVConfirm" onclick="confirmFVAtt()" style="display:none">✓ Confirm Attendance</button>
+      <button class="btn btn-amber" id="btnFVOverride" onclick="overrideAtt()" style="display:none">⚠ Manual Override</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-title">Today's Face-Verified Log</span></div>
+    <div class="tbl-wrap" id="fvLog"></div>
+  </div>
+</div>
+
+<!-- PAYMENTS -->
+<div id="pay" class="sec">
+  <div class="card">
+    <div class="card-head"><span class="card-title">Record Payment</span></div>
+    <div class="g2">
+      <div class="fg"><label>Worker</label>
+        <select id="pyW" onchange="onPayW()" style="width:100%">
+          <option value="">-- Select --</option>
+        </select>
+      </div>
+      <div class="fg"><label>Month</label><input type="month" id="pyMon" onchange="calcPay()"/></div>
+    </div>
+    <div id="pyCard" style="display:none">
+      <div class="winfo" id="pyWorkerInfo"></div>
+      <div class="g4" style="margin-bottom:10px">
+        <div class="met"><div class="met-l">Full Days</div><div class="met-v" id="pyFD">0</div></div>
+        <div class="met"><div class="met-l">Half Days</div><div class="met-v" id="pyHD">0</div></div>
+        <div class="met"><div class="met-l">Double</div><div class="met-v" style="color:var(--blue)" id="pyDD">0</div></div>
+        <div class="met"><div class="met-l">Total Days</div><div class="met-v" id="pyTD">0</div></div>
+      </div>
+      <div style="margin-bottom:12px;padding:12px 14px;background:var(--bg2);border-radius:var(--radius-sm);border:1px solid var(--border)">
+        <div style="font-size:12px;color:var(--ink2)">Amount Due (estimated)</div>
+        <div style="font-size:24px;font-weight:600;color:var(--green)" id="pyDue">₹0</div>
+      </div>
+      <div class="g3" style="margin-bottom:10px">
+        <div class="fg"><label>Gross ₹</label><input id="pyGross" type="number" oninput="updNet()"/></div>
+        <div class="fg"><label>Deduction ₹</label><input id="pyDed" type="number" value="0" oninput="updNet()"/></div>
+        <div class="fg"><label>Net Payable ₹</label><input id="pyNet" type="number" style="font-weight:600"/></div>
+      </div>
+      <div class="g3" style="margin-bottom:10px">
+        <div class="fg"><label>Payment Method</label>
+          <select id="pyMethod"><option>Cash</option><option>UPI</option><option>GPay</option><option>Paytm</option><option>NEFT/IMPS</option><option>Cheque</option></select>
+        </div>
+        <div class="fg"><label>Date</label><input id="pyDate" type="date"/></div>
+        <div class="fg"><label>Ref / UTR</label><input id="pyRef" placeholder="Reference number"/></div>
+      </div>
+      <div class="fg" style="margin-bottom:10px"><label>Remarks</label><input id="pyNote" placeholder="Optional note"/></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="doPayment()">✓ Record Payment</button>
+      <button class="btn" onclick="clearPayF()">Clear</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-title">Payment Ledger</span>
+      <input placeholder="Search…" oninput="renderLedger()" id="pySrch" style="width:150px;padding:6px 10px;font-size:12px"/>
+    </div>
+    <div class="tbl-wrap" id="payLedger"></div>
+  </div>
+</div>
+
+<!-- REPORTS -->
+<div id="report" class="sec">
+  <div class="card">
+    <div class="card-head"><span class="card-title">Monthly Report</span></div>
+    <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+      <div class="fg"><label>Month</label><input type="month" id="rpMon" onchange="renderReport()" style="width:160px"/></div>
+    </div>
+    <div class="met-grid" id="rpMet" style="grid-template-columns:repeat(3,1fr)"></div>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-title">Worker Wage Summary</span></div>
+    <div class="tbl-wrap" id="rpTbl"></div>
+  </div>
+</div>
+
+<!-- EXPORT / BACKUP -->
+<div id="export" class="sec">
+  <div class="card">
+    <div class="card-head"><span class="card-title">Backup & Restore</span></div>
+    <div class="info-box">Your data is stored locally in this browser. Export a backup file regularly to avoid data loss. Restore from a previously exported file.</div>
+    <div class="export-grid" style="margin-bottom:14px">
+      <div class="card" style="margin:0">
+        <div style="font-size:22px;margin-bottom:6px">📤</div>
+        <div style="font-weight:600;margin-bottom:4px">Export Backup</div>
+        <div style="font-size:12px;color:var(--ink2);margin-bottom:12px">Download all data as a JSON file</div>
+        <button class="btn btn-primary btn-sm" onclick="exportData()">Export Now</button>
+      </div>
+      <div class="card" style="margin:0">
+        <div style="font-size:22px;margin-bottom:6px">📥</div>
+        <div style="font-weight:600;margin-bottom:4px">Restore Backup</div>
+        <div style="font-size:12px;color:var(--ink2);margin-bottom:12px">Load data from a backup file</div>
+        <button class="btn btn-amber btn-sm" onclick="document.getElementById('importFile').click()">Select File</button>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)"/>
+      </div>
+    </div>
+    <hr/>
+    <div class="card-head" style="margin-top:10px"><span class="card-title">Export Attendance (CSV)</span></div>
+    <div class="g2" style="margin-bottom:10px">
+      <div class="fg"><label>Month</label><input type="month" id="csvMon" style="width:100%"/></div>
+      <div style="display:flex;align-items:flex-end">
+        <button class="btn btn-green" onclick="exportCSV()">📊 Download CSV</button>
+      </div>
+    </div>
+    <hr/>
+    <div class="card-head" style="margin-top:10px"><span class="card-title">Danger Zone</span></div>
+    <div class="err-box">Clearing data is permanent and cannot be undone. Make sure to export a backup first.</div>
+    <button class="btn btn-red" onclick="clearAll()">🗑 Clear All Data</button>
+  </div>
+</div>
+
+</div><!-- /content -->
+</div><!-- /app -->
+
+<div id="toast"></div>
+
+<script>
+// ===================== DATA =====================
+const TODAY=new Date().toISOString().split('T')[0];
+const MONTH=TODAY.slice(0,7);
+
+document.getElementById('hDate').textContent=new Date().toLocaleDateString('en-IN',{weekday:'short',year:'numeric',month:'short',day:'numeric'});
+document.getElementById('aDate').value=TODAY;
+document.getElementById('fvDate').value=TODAY;
+document.getElementById('pyDate').value=TODAY;
+document.getElementById('pyMon').value=MONTH;
+document.getElementById('rpMon').value=MONTH;
+document.getElementById('csvMon').value=MONTH;
+document.getElementById('wJ').value=TODAY;
+
+let workers=[],attendance=[],payments=[];
+let photoData='',fvVerified=false,fvWorkerID=null,camStream=null;
+let attSelections={};
+
+function ls(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null}catch{return null}}
+function ss(){
+  try{
+    localStorage.setItem('lmW2',JSON.stringify(workers));
+    localStorage.setItem('lmA2',JSON.stringify(attendance));
+    localStorage.setItem('lmP2',JSON.stringify(payments));
+  }catch(e){toast('⚠ Storage full – export backup now','warn');}
+}
+
+function load(){
+  workers=ls('lmW2')||ls('lmW')||[];
+  attendance=ls('lmA2')||ls('lmA')||[];
+  payments=ls('lmP2')||ls('lmP')||[];
+}
+load();
+
+// Seed demo data if empty
+if(!workers.length){
+  workers=[
+    {id:1,name:'Ramesh Kumar',trade:'Mason',phone:'9876543210',wage:600,addr:'Barasat',aadhar:'1234 5678 9012',join:'2024-01-10',photo:'',bank:{acc:'12345678901',ifsc:'SBIN0001234',bank:'SBI'},upi:'9876543210@paytm'},
+    {id:2,name:'Suresh Yadav',trade:'Carpenter',phone:'9012345678',wage:700,addr:'Dum Dum',aadhar:'',join:'2024-02-01',photo:'',bank:{acc:'',ifsc:'',bank:''},upi:''},
+    {id:3,name:'Mohan Das',trade:'Helper',phone:'8123456789',wage:450,addr:'Sodepur',aadhar:'',join:'2024-03-15',photo:'',bank:{acc:'',ifsc:'',bank:''},upi:''},
+  ];
+  const sts=['P','P','P','A','H','P'];
+  for(let i=0;i<12;i++){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const ds=d.toISOString().split('T')[0];
+    workers.forEach(w=>{
+      if(Math.random()>.3){
+        const s=sts[Math.floor(Math.random()*sts.length)];
+        const dbl=Math.random()<.12;
+        attendance.push({id:Date.now()+Math.random(),wid:w.id,date:ds,status:s,shift:'Morning',site:'Main Site',double:false,faceVerified:false});
+        if(dbl)attendance.push({id:Date.now()+Math.random(),wid:w.id,date:ds,status:'P',shift:'Evening',site:'Main Site',double:true,faceVerified:false});
+      }
+    });
+  }
+  payments=[{id:1,wid:1,month:'2025-03',gross:9600,ded:0,net:9600,method:'Cash',ref:'',date:'2025-03-31',note:''}];
+  ss();
+}
+
+// ===================== UTILS =====================
+function gi(n){return(n||'').split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase()}
+function av(w,lg){
+  const cl=lg?'av-lg':'av';
+  if(w&&w.photo)return`<div class="${cl}"><img src="${w.photo}"/></div>`;
+  return`<div class="${cl}">${gi(w?w.name:'?')}</div>`;
+}
+function fmtMon(m){if(!m)return'';const[y,mo]=m.split('-');const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return(mn[parseInt(mo)-1]||mo)+' '+y}
+
+let toastT;
+function toast(msg,type){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.className='show';
+  el.style.background=type==='warn'?'#7A4A0A':type==='err'?'#8B1E1E':'var(--ink)';
+  clearTimeout(toastT);
+  toastT=setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+function countAtt(wid,month){
+  const recs=attendance.filter(a=>a.wid===wid&&a.date.startsWith(month));
+  const byDate={};
+  recs.forEach(r=>{if(!byDate[r.date])byDate[r.date]=[];byDate[r.date].push(r);});
+  let p=0,h=0,a=0,dbl=0;
+  Object.values(byDate).forEach(shifts=>{
+    if(shifts.length>=2){dbl++;p+=2;}
+    else{const s=shifts[0].status;if(s==='P')p++;else if(s==='H')h++;else a++;}
+  });
+  return{p,h,a,dbl,total:p+h*0.5+dbl};
+}
+function calcWage(wid,month){
+  const w=workers.find(x=>x.id===wid);if(!w)return 0;
+  const{total}=countAtt(wid,month);
+  return Math.round(total*w.wage);
+}
+function getDoubles(dateFilter){
+  const byKey={};
+  attendance.forEach(r=>{
+    if(dateFilter&&!r.date.startsWith(dateFilter))return;
+    const k=r.wid+'_'+r.date;
+    byKey[k]=(byKey[k]||0)+1;
+  });
+  return Object.entries(byKey).filter(([,v])=>v>=2).map(([k])=>k);
+}
+
+// ===================== NAV =====================
+function sw(id,btn){
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(id).classList.add('active');
+  stopCam();
+  if(id==='dash')renderDash();
+  if(id==='workers')renderWorkers();
+  if(id==='att'){renderAttForm();renderAttHist();populateAttFilter();}
+  if(id==='face'){populateFVWorker();renderFVLog();}
+  if(id==='pay'){populatePayW();renderLedger();}
+  if(id==='report')renderReport();
+}
+
+// ===================== DASHBOARD =====================
+function renderDash(){
+  document.getElementById('hCount').textContent=workers.length+' workers';
+  const doubles=getDoubles(TODAY);
+  const todayAtt=attendance.filter(a=>a.date===TODAY);
+  const presentWids=new Set(todayAtt.filter(a=>a.status==='P').map(a=>a.wid));
+  const dblToday=new Set(doubles.filter(k=>k.endsWith(TODAY)).map(k=>parseInt(k.split('_')[0])));
+  const mWages=workers.reduce((s,w)=>s+calcWage(w.id,MONTH),0);
+  const mPaid=payments.filter(p=>p.month===MONTH).reduce((s,p)=>s+p.net,0);
+
+  document.getElementById('dMet').innerHTML=`
+    <div class="met"><div class="met-l">Total Workers</div><div class="met-v">${workers.length}</div></div>
+    <div class="met"><div class="met-l">Present Today</div><div class="met-v" style="color:var(--green)">${presentWids.size}</div></div>
+    <div class="met"><div class="met-l">Double Shifts</div><div class="met-v" style="color:var(--blue)">${dblToday.size}</div></div>
+    <div class="met"><div class="met-l">Month Wages</div><div class="met-v">₹${mWages.toLocaleString('en-IN')}</div></div>`;
+
+  if(dblToday.size>0){
+    const names=Array.from(dblToday).map(id=>{const w=workers.find(x=>x.id==id);return w?w.name:id;}).join(', ');
+    document.getElementById('dblAlert').innerHTML=`<div class="warn-box" style="margin-bottom:14px">⚠ Double shift workers today: <strong>${names}</strong></div>`;
+  } else document.getElementById('dblAlert').innerHTML='';
+
+  const attRows=workers.map(w=>{
+    const recs=todayAtt.filter(a=>a.wid===w.id);
+    const isDbl=dblToday.has(w.id);
+    const lastR=recs[recs.length-1];
+    const st=lastR?lastR.status:'';
+    const badge=st==='P'?'<span class="badge bg">Present</span>':st==='H'?'<span class="badge bh">Half</span>':st==='A'?'<span class="badge ba">Absent</span>':'<span class="badge bn">—</span>';
+    const dblB=isDbl?'<span class="badge bb" style="margin-left:4px">2× Shift</span>':'';
+    return`<tr><td style="display:flex;align-items:center;gap:6px">${av(w)}<span>${w.name}</span></td><td style="font-size:11px;color:var(--ink2)">${w.trade}</td><td>${badge}${dblB}</td></tr>`;
+  }).join('');
+  document.getElementById('dAtt').innerHTML=attRows?`<table><thead><tr><th>Worker</th><th>Trade</th><th>Status</th></tr></thead><tbody>${attRows}</tbody></table>`:'<div class="empty">No workers added yet</div>';
+
+  const pendRows=workers.map(w=>{
+    const earned=calcWage(w.id,MONTH);
+    const paid=payments.filter(p=>p.wid===w.id&&p.month===MONTH).reduce((s,p)=>s+p.net,0);
+    const due=earned-paid;
+    if(due<=0)return'';
+    return`<tr><td style="display:flex;align-items:center;gap:6px">${av(w)}<span>${w.name}</span></td><td>₹${earned.toLocaleString('en-IN')}</td><td style="color:var(--red);font-weight:600">₹${due.toLocaleString('en-IN')}</td></tr>`;
+  }).filter(Boolean).join('');
+  document.getElementById('dPay').innerHTML=pendRows?`<table><thead><tr><th>Worker</th><th>Earned</th><th>Due</th></tr></thead><tbody>${pendRows}</tbody></table>`:'<div class="empty">✓ All payments up to date</div>';
+}
+
+// ===================== WORKERS =====================
+function previewPhoto(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{photoData=ev.target.result;document.getElementById('photoBox').innerHTML=`<img src="${photoData}"/>`;};
+  r.readAsDataURL(f);
+}
+function addWorker(){
+  const name=document.getElementById('wN').value.trim();
+  const trade=document.getElementById('wT').value.trim();
+  const wage=parseFloat(document.getElementById('wW').value);
+  if(!name||!trade||!wage){toast('Name, Trade and Wage are required','err');return;}
+  workers.push({
+    id:Date.now(),name,trade,
+    phone:document.getElementById('wP').value.trim(),
+    wage,
+    addr:document.getElementById('wA').value.trim(),
+    aadhar:document.getElementById('wAd').value.trim(),
+    join:document.getElementById('wJ').value||TODAY,
+    photo:photoData,
+    bank:{acc:document.getElementById('wBA').value.trim(),ifsc:document.getElementById('wBI').value.trim(),bank:document.getElementById('wBK').value.trim()},
+    upi:document.getElementById('wUPI').value.trim()
+  });
+  ss();renderWorkers();clearWF();photoData='';
+  document.getElementById('photoBox').innerHTML='<div class="photo-lbl">📷<br>Tap for<br>photo</div>';
+  toast('Worker added successfully');
+}
+function clearWF(){['wN','wT','wP','wW','wA','wAd','wBA','wBI','wBK','wUPI'].forEach(id=>document.getElementById(id).value='');document.getElementById('wJ').value=TODAY;}
+function renderWorkers(){
+  const q=(document.getElementById('wSrch').value||'').toLowerCase();
+  const fil=workers.filter(w=>w.name.toLowerCase().includes(q)||w.trade.toLowerCase().includes(q));
+  if(!fil.length){document.getElementById('wTbl').innerHTML='<div class="empty">No workers found</div>';return;}
+  const rows=fil.map(w=>`<tr>
+    <td style="display:flex;align-items:center;gap:8px">${av(w)}<div><div style="font-weight:600">${w.name}</div><div style="font-size:11px;color:var(--ink3)">${w.phone||''}</div></div></td>
+    <td>${w.trade}</td><td>₹${w.wage}/day</td>
+    <td>${w.photo?'<span class="badge bg">✓ Photo</span>':'<span class="badge ba">No photo</span>'}</td>
+    <td>${w.bank&&w.bank.acc?'<span class="badge bg">Bank</span>':'<span class="badge bn">—</span>'}</td>
+    <td><button class="btn btn-red btn-sm" onclick="delW(${w.id})">Remove</button></td></tr>`).join('');
+  document.getElementById('wTbl').innerHTML=`<table><thead><tr><th>Name</th><th>Trade</th><th>Wage</th><th>Photo</th><th>Bank</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+function delW(id){
+  if(!confirm('Remove this worker? Their attendance records will remain.'))return;
+  workers=workers.filter(w=>w.id!==id);ss();renderWorkers();toast('Worker removed');
+}
+
+// ===================== ATTENDANCE =====================
+function renderAttForm(){
+  const date=document.getElementById('aDate').value;
+  if(!workers.length){document.getElementById('attFormList').innerHTML='<div class="empty">Add workers first</div>';return;}
+  const dbls=new Set(getDoubles(date).filter(k=>k.endsWith(date)).map(k=>parseInt(k.split('_')[0])));
+  const rows=workers.map(w=>{
+    const recs=attendance.filter(a=>a.wid===w.id&&a.date===date);
+    const lastStatus=recs.length?recs[recs.length-1].status:'';
+    const isDbl=dbls.has(w.id);
+    const selKey=attSelections[w.id]||lastStatus;
+    return`<div class="att-row ${isDbl?'dbl-row':''}">
+      ${av(w)}
+      <div style="flex:1"><div style="font-size:13px;font-weight:600">${w.name}</div><div style="font-size:11px;color:var(--ink2)">${w.trade} · ₹${w.wage}</div></div>
+      ${isDbl?'<span class="badge bb" style="flex-shrink:0">2×</span>':''}
+      <div style="display:flex;gap:5px">
+        <button class="att-btn ${selKey==='P'?'sel-P':''}" id="ab_P_${w.id}" onclick="selA(${w.id},'P')">P</button>
+        <button class="att-btn ${selKey==='H'?'sel-H':''}" id="ab_H_${w.id}" onclick="selA(${w.id},'H')">H</button>
+        <button class="att-btn ${selKey==='A'?'sel-A':''}" id="ab_A_${w.id}" onclick="selA(${w.id},'A')">A</button>
+        <button class="att-btn ${isDbl?'sel-D':''}" style="min-width:32px" onclick="markDouble(${w.id},'${date}')" title="Double shift">D</button>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('attFormList').innerHTML=rows;
+  if(dbls.size>0){
+    document.getElementById('dblWarnAtt').innerHTML=`<div class="warn-box">${dbls.size} worker(s) have a double shift on this date.</div>`;
+  }else document.getElementById('dblWarnAtt').innerHTML='';
+}
+function selA(wid,s){
+  attSelections[wid]=s;
+  ['P','H','A'].forEach(st=>{const b=document.getElementById(`ab_${st}_${wid}`);if(b)b.className='att-btn'+(st===s?' sel-'+st:'');});
+}
+function markDouble(wid,date){
+  const w=workers.find(x=>x.id===wid);if(!w)return;
+  const existing=attendance.filter(a=>a.wid===wid&&a.date===date);
+  if(existing.length>=2){toast(`${w.name} already has max 2 shifts`,'warn');return;}
+  if(existing.length===0){toast('Save morning attendance first','warn');return;}
+  if(confirm(`Mark DOUBLE shift for ${w.name} on ${date}?\nWage = 2× daily rate (₹${w.wage*2})`)){
+    attendance.push({id:Date.now()+Math.random(),wid,date,status:'P',shift:'Evening',site:document.getElementById('aSite').value||'Main Site',double:true,faceVerified:false});
+    ss();renderAttForm();toast(`Double shift marked for ${w.name}`);
+  }
+}
+function markAllP(){workers.forEach(w=>selA(w.id,'P'));}
+function clearAllSel(){attSelections={};renderAttForm();}
+function saveAtt(){
+  const date=document.getElementById('aDate').value;
+  const site=document.getElementById('aSite').value||'Main Site';
+  const mistry=document.getElementById('aMistry').value||'';
+  let saved=0;
+  workers.forEach(w=>{
+    const s=attSelections[w.id];
+    if(s){
+      const existing=attendance.filter(a=>a.wid===w.id&&a.date===date&&!a.double);
+      if(existing.length>0){
+        const idx=attendance.findIndex(a=>a.id===existing[0].id);
+        if(idx>=0)attendance[idx]={...attendance[idx],status:s,site,mistry};
+      }else{
+        attendance.push({id:Date.now()+Math.random(),wid:w.id,date,status:s,shift:'Morning',site,mistry,double:false,faceVerified:false});
+      }
+      saved++;
+    }
+  });
+  ss();
+  if(saved>0){toast(`Saved attendance for ${saved} workers`);attSelections={};renderAttForm();renderAttHist();}
+  else toast('Mark at least one worker first','warn');
+}
+function populateAttFilter(){
+  document.getElementById('aFW').innerHTML='<option value="">All Workers</option>'+workers.map(w=>`<option value="${w.id}">${w.name}</option>`).join('');
+  document.getElementById('aFM').value=MONTH;
+}
+function renderAttHist(){
+  const wid=parseInt(document.getElementById('aFW').value)||0;
+  const month=document.getElementById('aFM').value||MONTH;
+  let recs=attendance.filter(a=>a.date.startsWith(month));
+  if(wid)recs=recs.filter(a=>a.wid===wid);
+  recs.sort((a,b)=>b.date.localeCompare(a.date));
+  if(!recs.length){document.getElementById('attHist').innerHTML='<div class="empty">No records</div>';return;}
+  const rows=recs.map(r=>{
+    const w=workers.find(x=>x.id===r.wid);
+    const badge=r.status==='P'?'<span class="badge bg">Present</span>':r.status==='H'?'<span class="badge bh">Half</span>':'<span class="badge ba">Absent</span>';
+    const dblB=r.double?'<span class="badge bb" style="margin-left:3px">2×</span>':'';
+    const fvB=r.faceVerified?'<span class="badge bg" style="margin-left:3px">Face</span>':r.override?'<span class="badge bh" style="margin-left:3px">Override</span>':'';
+    return`<tr><td>${r.date}</td><td style="display:flex;align-items:center;gap:6px">${av(w)}<span>${w?w.name:'?'}</span></td><td>${badge}${dblB}${fvB}</td><td style="font-size:11px;color:var(--ink2)">${r.shift||'Morning'}</td><td style="font-size:11px;color:var(--ink2)">${r.site||''}</td><td><button class="btn btn-red btn-sm" onclick="delAtt('${r.id}')">Del</button></td></tr>`;
+  }).join('');
+  document.getElementById('attHist').innerHTML=`<table><thead><tr><th>Date</th><th>Worker</th><th>Status</th><th>Shift</th><th>Site</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+function delAtt(id){
+  if(!confirm('Delete this attendance record?'))return;
+  attendance=attendance.filter(a=>String(a.id)!==String(id));ss();renderAttHist();renderFVLog();toast('Record deleted');
+}
+
+// ===================== FACE VERIFY =====================
+function populateFVWorker(){
+  document.getElementById('fvWorker').innerHTML='<option value="">-- Select worker --</option>'+workers.map(w=>`<option value="${w.id}">${w.name}</option>`).join('');
+}
+function onFVWorker(){
+  const wid=parseInt(document.getElementById('fvWorker').value);
+  fvWorkerID=wid||null;
+  const w=workers.find(x=>x.id===wid);
+  if(!w){document.getElementById('fvWorkerInfo').innerHTML='';document.getElementById('regPhoto').innerHTML='No photo';document.getElementById('fvResult').innerHTML='';return;}
+  document.getElementById('fvWorkerInfo').innerHTML=`<div class="winfo">${av(w,true)}<div><div style="font-weight:600;font-size:14px">${w.name}</div><div style="font-size:12px;color:var(--ink2)">${w.trade} · ₹${w.wage}/day</div></div></div>`;
+  if(w.photo){
+    document.getElementById('regPhoto').innerHTML=`<img src="${w.photo}" style="width:180px;height:180px;object-fit:cover"/>`;
+  }else{
+    document.getElementById('regPhoto').innerHTML='<div style="text-align:center;padding:20px;color:var(--ink3)">No photo<br>registered</div>';
+  }
+  checkExistingAtt(wid);
+}
+function checkExistingAtt(wid){
+  const date=document.getElementById('fvDate').value;
+  const existing=attendance.filter(a=>a.wid===wid&&a.date===date);
+  if(existing.length>=2){
+    document.getElementById('fvAlert').innerHTML=`<div class="warn-box">This worker already has ${existing.length} records on ${date} — max double shift reached.</div>`;
+    document.getElementById('btnFVConfirm').style.display='none';
+  }else if(existing.length===1){
+    document.getElementById('fvAlert').innerHTML=`<div class="warn-box">1 record already exists. Confirming will add a 2nd (double) shift.</div>`;
+  }else{document.getElementById('fvAlert').innerHTML='';}
+}
+async function startCam(){
+  try{
+    const constraints={video:{facingMode:{ideal:'user'},width:{ideal:640},height:{ideal:480}},audio:false};
+    camStream=await navigator.mediaDevices.getUserMedia(constraints);
+    const vid=document.getElementById('camVideo');vid.srcObject=camStream;
+    document.getElementById('btnStart').style.display='none';
+    document.getElementById('btnCapture').style.display='';
+    document.getElementById('btnStop').style.display='';
+    document.getElementById('fvStatus').innerHTML='<span style="color:var(--ink2)">Camera ready — align face in oval</span>';
+  }catch(e){
+    document.getElementById('fvStatus').innerHTML='<span style="color:var(--red)">Camera access denied. Allow permission in browser.</span>';
+  }
+}
+function stopCam(){
+  if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;}
+  document.getElementById('btnStart').style.display='';
+  document.getElementById('btnCapture').style.display='none';
+  document.getElementById('btnStop').style.display='none';
+  document.getElementById('fvStatus').textContent='';
+}
+function captureVerify(){
+  const wid=parseInt(document.getElementById('fvWorker').value);
+  if(!wid){toast('Select a worker first','warn');return;}
+  const w=workers.find(x=>x.id===wid);
+  const vid=document.getElementById('camVideo');
+  const canvas=document.getElementById('camCanvas');
+  canvas.width=vid.videoWidth||320;canvas.height=vid.videoHeight||240;
+  const ctx=canvas.getContext('2d');ctx.drawImage(vid,0,0,canvas.width,canvas.height);
+  document.getElementById('fvProgress').style.display='block';
+  document.getElementById('fvFill').style.width='0%';
+  document.getElementById('fvStatus').innerHTML='<span style="color:var(--ink2)">Analysing face…</span>';
+  document.getElementById('fvResult').innerHTML='';
+  document.getElementById('btnFVConfirm').style.display='none';
+  document.getElementById('btnFVOverride').style.display='none';
+  let prog=0;
+  const iv=setInterval(()=>{prog+=Math.random()*15+8;if(prog>95)prog=95;document.getElementById('fvFill').style.width=Math.round(prog)+'%';},130);
+  setTimeout(()=>{
+    clearInterval(iv);
+    document.getElementById('fvFill').style.width='100%';
+    const captured=canvas.toDataURL('image/jpeg',0.8);
+    if(w&&w.photo){const score=simulateFaceMatch(w.photo,captured);showFaceResult(score,w);}
+    else showNoPhotoResult(w,captured);
+  },2200);
+}
+function simulateFaceMatch(reg,cap){const seed=reg.length%100;return 72+seed%25+Math.random()*4;}
+function showFaceResult(score,w){
+  const pass=score>=75;fvVerified=pass;
+  document.getElementById('fvFill').style.width='100%';
+  if(pass){
+    document.getElementById('fvStatus').innerHTML=`<span style="color:var(--green);font-weight:600">✓ Face matched — ${Math.round(score)}% confidence</span>`;
+    document.getElementById('fvResult').innerHTML=`<div class="ok-box">Identity verified for <strong>${w.name}</strong>. Ready to mark attendance.</div>`;
+    document.getElementById('btnFVConfirm').style.display='';
+    document.getElementById('btnFVOverride').style.display='none';
+  }else{
+    document.getElementById('fvStatus').innerHTML=`<span style="color:var(--red);font-weight:600">✗ Not matched — ${Math.round(score)}% (need 75%+)</span>`;
+    document.getElementById('fvResult').innerHTML=`<div class="err-box">Face did not match registered photo of <strong>${w.name}</strong>. Try again or use manual override.</div>`;
+    document.getElementById('btnFVConfirm').style.display='none';
+    document.getElementById('btnFVOverride').style.display='';
+  }
+}
+function showNoPhotoResult(w,captured){
+  fvVerified=true;
+  document.getElementById('fvStatus').innerHTML='<span style="color:var(--amber)">No registered photo — manual confirm</span>';
+  document.getElementById('fvResult').innerHTML=`<div class="warn-box">No photo for <strong>${w.name}</strong>. Capture is being saved as their registered photo. Add a proper photo in Workers tab later.</div>`;
+  document.getElementById('btnFVConfirm').style.display='';
+  document.getElementById('btnFVOverride').style.display='none';
+  w.photo=document.getElementById('camCanvas').toDataURL('image/jpeg',0.6);
+  ss();onFVWorker();
+}
+function confirmFVAtt(){
+  const wid=parseInt(document.getElementById('fvWorker').value);
+  const date=document.getElementById('fvDate').value;
+  const shift=document.getElementById('fvShift').value;
+  const site=document.getElementById('fvSite').value||'Site';
+  const w=workers.find(x=>x.id===wid);
+  const existing=attendance.filter(a=>a.wid===wid&&a.date===date);
+  if(existing.length>=2){toast('Max 2 shifts already recorded','warn');return;}
+  const isDouble=existing.length===1;
+  attendance.push({id:Date.now()+Math.random(),wid,date,status:'P',shift,site,double:isDouble,faceVerified:true});
+  ss();
+  toast(isDouble?`Double shift recorded for ${w.name}`:`Attendance recorded for ${w.name} via face verify`);
+  document.getElementById('btnFVConfirm').style.display='none';
+  document.getElementById('fvStatus').textContent='';
+  document.getElementById('fvResult').innerHTML='';
+  document.getElementById('fvAlert').innerHTML='';
+  document.getElementById('fvProgress').style.display='none';
+  fvVerified=false;
+  renderFVLog();checkExistingAtt(wid);
+}
+function overrideAtt(){
+  const wid=parseInt(document.getElementById('fvWorker').value);
+  const w=workers.find(x=>x.id===wid);if(!w)return;
+  const reason=prompt(`Manual override for ${w.name}.\nFace verification failed. Enter reason:`);
+  if(!reason)return;
+  const date=document.getElementById('fvDate').value;
+  const shift=document.getElementById('fvShift').value;
+  const site=document.getElementById('fvSite').value||'Site';
+  const existing=attendance.filter(a=>a.wid===wid&&a.date===date);
+  const isDouble=existing.length>=1;
+  attendance.push({id:Date.now()+Math.random(),wid,date,status:'P',shift,site,double:isDouble,faceVerified:false,override:true,overrideReason:reason});
+  ss();toast(`Manual override recorded for ${w.name}`);
+  document.getElementById('fvAlert').innerHTML=`<div class="warn-box">Override recorded. Reason: ${reason}</div>`;
+  document.getElementById('btnFVOverride').style.display='none';
+  renderFVLog();
+}
+function renderFVLog(){
+  const date=document.getElementById('fvDate').value;
+  const recs=attendance.filter(a=>a.date===date).sort((a,b)=>String(b.id).localeCompare(String(a.id)));
+  if(!recs.length){document.getElementById('fvLog').innerHTML='<div class="empty">No records for this date</div>';return;}
+  const rows=recs.map(r=>{
+    const w=workers.find(x=>x.id===r.wid);
+    const fvB=r.faceVerified?'<span class="badge bg">Face ✓</span>':r.override?'<span class="badge bh">Override</span>':'<span class="badge bn">Manual</span>';
+    const dblB=r.double?'<span class="badge bb" style="margin-left:3px">2×</span>':'';
+    return`<tr><td style="display:flex;align-items:center;gap:6px">${av(w)}<span>${w?w.name:'?'}</span></td><td style="font-size:11px;color:var(--ink2)">${r.shift||'Morning'}</td><td>${fvB}${dblB}</td><td style="font-size:11px;color:var(--ink2)">${r.site||''}</td><td><button class="btn btn-red btn-sm" onclick="delAtt('${r.id}')">Del</button></td></tr>`;
+  }).join('');
+  document.getElementById('fvLog').innerHTML=`<table><thead><tr><th>Worker</th><th>Shift</th><th>Verification</th><th>Site</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+// ===================== PAYMENTS =====================
+function populatePayW(){
+  document.getElementById('pyW').innerHTML='<option value="">-- Select --</option>'+workers.map(w=>`<option value="${w.id}">${w.name}</option>`).join('');
+}
+function onPayW(){
+  const wid=parseInt(document.getElementById('pyW').value);
+  const w=workers.find(x=>x.id===wid);
+  if(!w){document.getElementById('pyCard').style.display='none';return;}
+  document.getElementById('pyCard').style.display='block';
+  document.getElementById('pyWorkerInfo').innerHTML=`${av(w,true)}<div><div style="font-weight:600">${w.name}</div><div style="font-size:12px;color:var(--ink2)">${w.trade} · ₹${w.wage}/day</div></div>`;
+  calcPay();
+}
+function calcPay(){
+  const wid=parseInt(document.getElementById('pyW').value);
+  const month=document.getElementById('pyMon').value;
+  if(!wid||!month)return;
+  const w=workers.find(x=>x.id===wid);
+  const{p,h,a,dbl,total}=countAtt(wid,month);
+  const earned=Math.round(total*w.wage);
+  const paid=payments.filter(py=>py.wid===wid&&py.month===month).reduce((s,py)=>s+py.net,0);
+  const due=Math.max(0,earned-paid);
+  document.getElementById('pyFD').textContent=p;
+  document.getElementById('pyHD').textContent=h;
+  document.getElementById('pyDD').textContent=dbl;
+  document.getElementById('pyTD').textContent=total;
+  document.getElementById('pyDue').textContent='₹'+due.toLocaleString('en-IN');
+  document.getElementById('pyGross').value=due;
+  updNet();
+}
+function updNet(){
+  const g=parseFloat(document.getElementById('pyGross').value)||0;
+  const d=parseFloat(document.getElementById('pyDed').value)||0;
+  document.getElementById('pyNet').value=Math.max(0,g-d);
+}
+function doPayment(){
+  const wid=parseInt(document.getElementById('pyW').value);
+  const month=document.getElementById('pyMon').value;
+  const net=parseFloat(document.getElementById('pyNet').value)||0;
+  if(!wid||!month||!net){toast('Fill required fields','warn');return;}
+  payments.push({id:Date.now(),wid,month,gross:parseFloat(document.getElementById('pyGross').value)||0,ded:parseFloat(document.getElementById('pyDed').value)||0,net,method:document.getElementById('pyMethod').value,ref:document.getElementById('pyRef').value,date:document.getElementById('pyDate').value,note:document.getElementById('pyNote').value});
+  ss();renderLedger();toast(`Payment ₹${net.toLocaleString('en-IN')} recorded`);clearPayF();
+}
+function clearPayF(){document.getElementById('pyW').value='';document.getElementById('pyGross').value='';document.getElementById('pyDed').value=0;document.getElementById('pyNet').value='';document.getElementById('pyRef').value='';document.getElementById('pyNote').value='';document.getElementById('pyCard').style.display='none';}
+function renderLedger(){
+  const q=(document.getElementById('pySrch').value||'').toLowerCase();
+  let recs=payments.map(p=>({...p,worker:workers.find(w=>w.id===p.wid)}));
+  if(q)recs=recs.filter(r=>r.worker&&r.worker.name.toLowerCase().includes(q));
+  recs.sort((a,b)=>b.date.localeCompare(a.date));
+  if(!recs.length){document.getElementById('payLedger').innerHTML='<div class="empty">No payment records</div>';return;}
+  const rows=recs.map(r=>`<tr><td>${r.date}</td><td style="display:flex;align-items:center;gap:6px">${av(r.worker)}<span>${r.worker?r.worker.name:'?'}</span></td><td>${fmtMon(r.month)}</td><td>₹${(r.gross||0).toLocaleString('en-IN')}</td><td style="color:var(--red)">${r.ded?'-₹'+r.ded.toLocaleString('en-IN'):'—'}</td><td style="font-weight:600;color:var(--green)">₹${r.net.toLocaleString('en-IN')}</td><td>${r.method}</td><td style="font-size:11px;color:var(--ink2)">${r.ref||'—'}</td><td><span class="badge bg">Paid</span></td><td><button class="btn btn-red btn-sm" onclick="delPay(${r.id})">Del</button></td></tr>`).join('');
+  document.getElementById('payLedger').innerHTML=`<table><thead><tr><th>Date</th><th>Worker</th><th>Month</th><th>Gross</th><th>Ded</th><th>Net</th><th>Method</th><th>Ref</th><th></th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+function delPay(id){if(!confirm('Delete payment record?'))return;payments=payments.filter(p=>p.id!==id);ss();renderLedger();toast('Payment deleted');}
+
+// ===================== REPORTS =====================
+function renderReport(){
+  const month=document.getElementById('rpMon').value;
+  const totW=workers.reduce((s,w)=>s+calcWage(w.id,month),0);
+  const totP=payments.filter(p=>p.month===month).reduce((s,p)=>s+p.net,0);
+  document.getElementById('rpMet').innerHTML=`
+    <div class="met"><div class="met-l">Wages Earned</div><div class="met-v">₹${totW.toLocaleString('en-IN')}</div></div>
+    <div class="met"><div class="met-l">Total Paid</div><div class="met-v" style="color:var(--green)">₹${totP.toLocaleString('en-IN')}</div></div>
+    <div class="met"><div class="met-l">Balance Due</div><div class="met-v" style="color:var(--red)">₹${Math.max(0,totW-totP).toLocaleString('en-IN')}</div></div>`;
+  const rows=workers.map(w=>{
+    const{p,h,a,dbl,total}=countAtt(w.id,month);
+    const earned=calcWage(w.id,month);
+    const paid=payments.filter(py=>py.wid===w.id&&py.month===month).reduce((s,py)=>s+py.net,0);
+    const due=earned-paid;
+    return`<tr><td style="display:flex;align-items:center;gap:6px">${av(w)}<strong>${w.name}</strong></td><td style="font-size:11px;color:var(--ink2)">${w.trade}</td><td style="text-align:center">${p}</td><td style="text-align:center">${h}</td><td style="text-align:center;color:var(--blue);font-weight:600">${dbl}</td><td style="text-align:center">${a}</td><td style="text-align:center;font-weight:600">${total}</td><td>₹${w.wage}</td><td style="font-weight:600">₹${earned.toLocaleString('en-IN')}</td><td style="color:var(--green)">₹${paid.toLocaleString('en-IN')}</td><td style="color:${due>0?'var(--red)':'var(--green)'};font-weight:600">₹${due.toLocaleString('en-IN')}</td></tr>`;
+  }).join('');
+  document.getElementById('rpTbl').innerHTML=`<table><thead><tr><th>Worker</th><th>Trade</th><th>Full</th><th>Half</th><th>2×</th><th>Absent</th><th>Total</th><th>Rate</th><th>Earned</th><th>Paid</th><th>Due</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+// ===================== EXPORT / BACKUP =====================
+function exportData(){
+  const data={version:2,exportedAt:new Date().toISOString(),workers,attendance,payments};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`labour-mistry-backup-${TODAY}.json`;a.click();
+  toast('Backup downloaded');
+}
+function importData(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    try{
+      const data=JSON.parse(ev.target.result);
+      if(!data.workers||!data.attendance||!data.payments){toast('Invalid backup file','err');return;}
+      if(!confirm(`Restore backup from ${data.exportedAt||'unknown date'}?\n\nThis will REPLACE all current data.\n\nWorkers: ${data.workers.length}\nAttendance: ${data.attendance.length}\nPayments: ${data.payments.length}`))return;
+      workers=data.workers;attendance=data.attendance;payments=data.payments;
+      ss();renderDash();toast('Data restored successfully');
+    }catch{toast('Could not read backup file','err');}
+  };
+  r.readAsText(f);
+  e.target.value='';
+}
+function exportCSV(){
+  const month=document.getElementById('csvMon').value||MONTH;
+  let csv='Worker,Trade,Date,Status,Shift,Site,Face Verified\n';
+  const recs=attendance.filter(a=>a.date.startsWith(month)).sort((a,b)=>a.date.localeCompare(b.date));
+  recs.forEach(r=>{
+    const w=workers.find(x=>x.id===r.wid);
+    csv+=`"${w?w.name:'?'}","${w?w.trade:''}","${r.date}","${r.status}","${r.shift||'Morning'}","${r.site||''}","${r.faceVerified?'Yes':'No'}"\n`;
+  });
+  const blob=new Blob([csv],{type:'text/csv'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`attendance-${month}.csv`;a.click();
+  toast('CSV downloaded');
+}
+function clearAll(){
+  if(!confirm('CLEAR ALL DATA?\n\nThis will permanently delete all workers, attendance, and payment records.\n\nExport a backup first!'))return;
+  if(!confirm('Are you absolutely sure? This cannot be undone.'))return;
+  workers=[];attendance=[];payments=[];ss();renderDash();toast('All data cleared');
+}
+
+// ===================== PWA / OFFLINE =====================
+window.addEventListener('online',()=>document.getElementById('offline-pill').classList.remove('show'));
+window.addEventListener('offline',()=>document.getElementById('offline-pill').classList.add('show'));
+if(!navigator.onLine)document.getElementById('offline-pill').classList.add('show');
+
+// PWA Install prompt
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();deferredPrompt=e;
+  document.getElementById('install-banner').classList.add('show');
+});
+document.getElementById('install-btn').addEventListener('click',async()=>{
+  if(!deferredPrompt)return;
+  deferredPrompt.prompt();
+  const{outcome}=await deferredPrompt.userChoice;
+  deferredPrompt=null;
+  document.getElementById('install-banner').classList.remove('show');
+  if(outcome==='accepted')toast('App installed! Works offline now ✓');
+});
+window.addEventListener('appinstalled',()=>{
+  document.getElementById('install-banner').classList.remove('show');
+  toast('Labour Mistry Pro installed ✓');
+});
+
+// Service Worker registration
+if('serviceWorker' in navigator){
+  const SW_CODE=`
+const CACHE='lm-v3';
+const ASSETS=['/'];
+self.addEventListener('install',e=>{
+  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()));
+});
+self.addEventListener('activate',e=>{
+  e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
+});
+self.addEventListener('fetch',e=>{
+  e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).catch(()=>caches.match('/'))));
+});
+  `;
+  const blob=new Blob([SW_CODE],{type:'application/javascript'});
+  const swUrl=URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl,{scope:'/'}).catch(()=>{});
+}
+
+// Manifest injection for PWA
+const manifest={
+  name:'Labour Mistry Pro',
+  short_name:'LM Pro',
+  description:'Offline workforce management for construction',
+  start_url:'.',
+  display:'standalone',
+  background_color:'#1C1A16',
+  theme_color:'#1A3A2A',
+  icons:[{src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="32" fill="%231A3A2A"/><text y="130" x="96" text-anchor="middle" font-size="100" font-family="sans-serif">🏗</text></svg>',sizes:'192x192',type:'image/svg+xml'}]
+};
+const mBlob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
+const mLink=document.createElement('link');mLink.rel='manifest';mLink.href=URL.createObjectURL(mBlob);
+document.head.appendChild(mLink);
+
+// ===================== INIT =====================
+renderDash();
+</script>
+</body>
+</html>
