@@ -3,11 +3,14 @@ name: Build APK
 on:
   push:
     branches: [ main, master ]
-  workflow_dispatch:
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:   # allows manual trigger from GitHub UI
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -19,15 +22,37 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Generate Gradle Wrapper if missing
+        run: |
+          if [ ! -f "gradle/wrapper/gradle-wrapper.jar" ]; then
+            echo "Gradle wrapper JAR missing, generating..."
+            gradle wrapper --gradle-version=8.7
+          else
+            echo "Gradle wrapper JAR found."
+          fi
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
       - name: Build Debug APK
         run: ./gradlew assembleDebug
 
+      - name: Build Release APK
+        run: ./gradlew assembleRelease
+
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
           name: LabourMistryPro-debug
           path: app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30
+
+      - name: Upload Release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: LabourMistryPro-release
+          path: app/build/outputs/apk/release/app-release*.apk
           retention-days: 30
