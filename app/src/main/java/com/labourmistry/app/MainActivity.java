@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Cache — allow offline use
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
-        settings.setAppCacheEnabled(true);
+        
         String cachePath = getCacheDir().getAbsolutePath();
         settings.setAppCachePath(cachePath);
 
