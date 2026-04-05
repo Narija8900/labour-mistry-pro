@@ -67,8 +67,7 @@ public class MainActivity extends AppCompatActivity {
         // Cache — allow offline use
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
         
-        String cachePath = getCacheDir().getAbsolutePath();
-        settings.setAppCachePath(cachePath);
+       
 
         // Media / Camera
         settings.setMediaPlaybackRequiresUserGesture(false);
